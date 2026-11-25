@@ -28,12 +28,12 @@
     async function search() {
       const from = document.getElementById('from').value;
       const to = document.getElementById('to').value;
-      const res = await fetch(`http://localhost:5000/api/routes/search?from=${from}&to=${to}`);
+      const res = await fetch(`/api/routes/search?from=${from}&to=${to}`);
       const data = await res.json();
       document.getElementById('title').innerText = `Results for ${from} to ${to}`;
       show(data);
       // Also load compare
-      const res2 = await fetch(`http://localhost:5000/api/routes/compare?from=${from}&to=${to}`);
+      const res2 = await fetch(`/api/routes/compare?from=${from}&to=${to}`);
       const comp = await res2.json();
       if (comp.cheapest) {
         document.getElementById('compare').innerHTML = `
@@ -47,7 +47,7 @@
     }
 
     async function loadAll() {
-      const res = await fetch(`http://localhost:5000/api/routes`);
+      const res = await fetch(`/api/routes`);
       const data = await res.json();
       document.getElementById('title').innerText = 'All Routes';
       document.getElementById('compare').innerHTML = '';

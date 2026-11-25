@@ -38,7 +38,7 @@
         duration: document.getElementById('duration').value,
         transportMode: document.getElementById('transportMode').value || 'BRT'
       };
-      const res = await fetch('http://localhost:5000/api/routes', {
+      const res = await fetch('/api/routes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
         body: JSON.stringify(body)
@@ -51,7 +51,7 @@
     async function deleteRoute(id) {
       const token = document.getElementById('token').value;
       if (!confirm('Delete this route? Telegram will be notified.')) return;
-      await fetch(`http://localhost:5000/api/routes/${id}`, {
+      await fetch(`/api/routes/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': 'Bearer ' + token }
       });
@@ -59,7 +59,7 @@
     }
 
     async function loadAll() {
-      const res = await fetch('http://localhost:5000/api/routes');
+      const res = await fetch('/api/routes');
       const data = await res.json();
       document.getElementById('result').innerHTML = data.map(r => `
         <div class="card">
