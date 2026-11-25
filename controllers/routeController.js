@@ -111,3 +111,35 @@ exports.compareRoutes = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+// GET /api/fares?from=Ikeja&to=Yaba - Proposal requirement
+exports.getFares = async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    if (!from || !to) return res.status(400).json({ message: 'from and to query are required, e.g. ?from=Ikeja&to=Yaba' });
+
+    const routes = await Route.find({
+      from: new RegExp(from, 'i'),
+      to: new RegExp(to, 'i')
+    });
+
+    if (routes.length === 0) return res.status(404).json({ message: 'No routes found for this journey' });
+
+    // Return clean fare list as proposal expects
+    const fares = routes.map(r => ({
+      routeId: r._id,
+      from: r.from,
+      to: r.to,
+      transportMode: r.transportMode,
+      fare: r.fare,
+      duration: r.duration,
+      stops: r.stops || []
+    }));
+
+    const cheapest = fares.reduce((min, r) => r.fare < min.fare ? r : min, fares[0]);
+
+    res.json({ from, to, total: fares.length, cheapest, fares });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

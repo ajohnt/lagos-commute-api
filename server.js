@@ -17,7 +17,17 @@ app.get('/api/health', (req, res) => {
 });
 
 const routeRoutes = require('./routes/routeRoutes');
+const { getFares } = require('./controllers/routeController');
 app.use('/api/routes', routeRoutes);
+
+// --- PROPOSAL ALIASES ---
+// Proposal wants GET /api/fares?from=X&to=Y (not /api/routes/fares)
+app.get('/api/fares', getFares);
+// Proposal wants /api/admin/routes for POST/PUT/DELETE
+app.use('/api/admin/routes', routeRoutes);
+// Proposal wants PATCH /api/admin/reports/:id/approve
+app.use('/api/admin/reports', require('./routes/reportRoutes'));
+
 app.use('/api/saved-routes', require('./routes/savedRouteRoutes'));
 
 const authRoutes = require('./routes/authRoutes');
