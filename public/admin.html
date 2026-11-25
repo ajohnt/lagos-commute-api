@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin - Lagos Fare Finder</title>
+  <style>
+    body { font-family: Arial; max-width: 600px; margin: 30px auto; padding: 20px; }
+    input, button { width: 100%; padding: 12px; margin: 8px 0; font-size: 16px; box-sizing: border-box; }
+    button { background: #008000; color: white; border: none; cursor: pointer; }
+    .card { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; }
+    .del { background: red; width: auto; padding: 8px 15px; }
+  </style>
+</head>
+<body>
+  <h2>🔐 Admin - Add Route</h2>
+  <p><a href="/">← Back to Fare Finder</a></p>
+
+  <input id="token" placeholder="Paste your Admin Token (Bearer token without Bearer)" type="password" />
+  <input id="name" placeholder="Name e.g Lekki to Ikeja" />
+  <input id="from" placeholder="From e.g Lekki" />
+  <input id="to" placeholder="To e.g Ikeja" />
+  <input id="fare" placeholder="Fare e.g 1500" type="number" />
+  <input id="duration" placeholder="Duration e.g 1 hr 30 mins" />
+  <input id="transportMode" placeholder="Mode e.g BRT" />
+  <button onclick="addRoute()">Add Route + Send Telegram Alert</button>
+  <p id="msg"></p>
+
+  <h3>All Routes - Click Delete to Remove</h3>
+  <div id="result"></div>
+
+  <script>
+    async function addRoute() {
+      const token = document.getElementById('token').value;
+      const body = {
+        name: document.getElementById('name').value,
+        from: document.getElementById('from').value,
+        to: document.getElementById('to').value,
+        fare: Number(document.getElementById('fare').value),
+        duration: document.getElementById('duration').value,
+        transportMode: document.getElementById('transportMode').value || 'BRT'
+      };
+      const res = await fetch('http://localhost:5000/api/routes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      document.getElementById('msg').innerText = res.ok ? '✅ Route added + Telegram sent!' : '❌ Error: ' + (data.error || data.message);
+      if (res.ok) loadAll();
+    }
+
+    async function deleteRoute(id) {
+      const token = document.getElementById('token').value;
+      if (!confirm('Delete this route? Telegram will be notified.')) return;
+      await fetch(`http://localhost:5000/api/routes/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      loadAll();
+    }
+
+    async function loadAll() {
+      const res = await fetch('http://localhost:5000/api/routes');
+      const data = await res.json();
+      document.getElementById('result').innerHTML = data.map(r => `
+        <div class="card">
+          <b>${r.from} to ${r.to}</b> - ₦${r.fare} - ${r.duration || ''}<br>
+          <button class="del" onclick="deleteRoute('${r._id}')">Delete</button>
+        </div>
+      `).join('');
+    }
+    loadAll();
+  </script>
+</body>
+</html>

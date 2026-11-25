@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lagos Fare Finder</title>
+  <style>
+    body { font-family: Arial; max-width: 600px; margin: 30px auto; padding: 20px; }
+    input, button { width: 100%; padding: 12px; margin: 8px 0; font-size: 16px; box-sizing: border-box; }
+    button { background: #008000; color: white; border: none; cursor: pointer; }
+    .card { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; }
+    .badge { display: inline-block; padding: 3px 8px; border-radius: 10px; font-size: 12px; color: white; margin-right: 5px; }
+    .cheap { background: green; }
+    .fast { background: blue; }
+    h3 { margin-top: 25px; }
+  </style>
+</head>
+<body>
+  <h2>🚌 Lagos Fare Finder</h2>
+  <input id="from" placeholder="From e.g Lekki" />
+  <input id="to" placeholder="To e.g Yaba" />
+  <button onclick="search()">Search Fare</button>
+  <button onclick="loadAll()" style="background:#333">Show All Routes</button>
+
+  <div id="compare"></div>
+  <h3 id="title">All Routes</h3>
+  <div id="result"></div>
+
+  <script>
+    async function search() {
+      const from = document.getElementById('from').value;
+      const to = document.getElementById('to').value;
+      const res = await fetch(`http://localhost:5000/api/routes/search?from=${from}&to=${to}`);
+      const data = await res.json();
+      document.getElementById('title').innerText = `Results for ${from} to ${to}`;
+      show(data);
+      // Also load compare
+      const res2 = await fetch(`http://localhost:5000/api/routes/compare?from=${from}&to=${to}`);
+      const comp = await res2.json();
+      if (comp.cheapest) {
+        document.getElementById('compare').innerHTML = `
+          <div class="card" style="background:#f0fff0">
+            <b>🏆 Cheapest:</b> ${comp.cheapest.from} to ${comp.cheapest.to} - ₦${comp.cheapest.fare}<br>
+            <b>⚡ Fastest:</b> ${comp.fastest.from} to ${comp.fastest.to} - ${comp.fastest.duration}
+          </div>`;
+      } else {
+        document.getElementById('compare').innerHTML = '';
+      }
+    }
+
+    async function loadAll() {
+      const res = await fetch(`http://localhost:5000/api/routes`);
+      const data = await res.json();
+      document.getElementById('title').innerText = 'All Routes';
+      document.getElementById('compare').innerHTML = '';
+      show(data);
+    }
+
+    function show(data) {
+      const div = document.getElementById('result');
+      if (!data || data.length === 0) {
+        div.innerHTML = '<p>No route found</p>';
+        return;
+      }
+      div.innerHTML = data.map(r => `
+        <div class="card">
+          <b>${r.from} to ${r.to}</b><br>
+          Fare: ₦${r.fare}<br>
+          Mode: ${r.transportMode || 'BRT'}<br>
+          Duration: ${r.duration || ''}
+        </div>
+      `).join('');
+    }
+
+    // Load all on open
+    loadAll();
+  </script>
+</body>
+</html>
