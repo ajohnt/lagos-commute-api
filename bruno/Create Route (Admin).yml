@@ -1,0 +1,29 @@
+info:
+  name: Create Route (Admin)
+  type: http
+  seq: 9
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/admin/routes"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "Ikeja to Yaba",
+        "from": "Ikeja",
+        "to": "Yaba",
+        "fare": 800,
+        "duration": "45 mins",
+        "transportType": "bus"
+      }
+  auth:
+    type: bearer
+    token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQ0ODM2MzdkZDgwNTY4ODYyYWEwNyIsImlhdCI6MTc5NTYyNjM3NSwiZXhwIjoxNzk2MjMxMTc1fQ.NeDd0cbV7A0OwiUIhSUaUFfmTVl3Pr2Z8dL754M5coE
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

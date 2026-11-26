@@ -1,0 +1,23 @@
+info:
+  name: Get Fares
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/fares?from=Ikeja&to=Yaba"
+  params:
+    - name: from
+      value: Ikeja
+      type: query
+    - name: to
+      value: Yaba
+      type: query
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

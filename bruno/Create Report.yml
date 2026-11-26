@@ -1,0 +1,27 @@
+info:
+  name: Create Report
+  type: http
+  seq: 8
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/reports"
+  body:
+    type: json
+    data: |-
+      {
+        "routeId": "6b07ed9c0befefc141ce879b",
+        "type": "traffic",
+        "message": "Traffic jam at Maryland",
+        "location": "Maryland"
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
